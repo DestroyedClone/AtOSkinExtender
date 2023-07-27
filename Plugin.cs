@@ -40,6 +40,42 @@ namespace AtOSkinExtender
 
             On.Globals.CreateGameContent += Globals_CreateGameContent;
             On.CharPopup.Start += CharPopup_Start;
+            On.HeroSelectionManager.Start += HeroSelectionManager_Start;
+        }
+
+        private void HeroSelectionManager_Start(On.HeroSelectionManager.orig_Start orig, HeroSelectionManager self)
+        {
+            foreach (var subclass in Globals.Instance._SubClassSource)
+            {
+                if (subclass.Value == null)
+                {
+                    _logger.LogError($"Couldn't find subclass! What's going on?");
+                    continue;
+                }
+                if (subclass.Key.StartsWith("young"))
+                {
+                    _logger.LogMessage($"Subclass {subclass.Key} is a youngtype, skipping.");
+                    continue;
+                }
+                var activeSkin = PlayerManager.Instance.GetActiveSkin(subclass.Key);
+                SkinData skinData = Globals.Instance.GetSkinData(activeSkin);
+                if (skinData != null)
+                {
+                    continue;
+                }
+                _logger.LogWarning($"Subclass {subclass.Key} has a null SkinData selected. Resetting to base skin to prevent nullref.");
+                var baseSkinData = GetBaseSkinForSubclass(subclass.Key);
+                if (baseSkinData == null)
+                {
+                    _logger.LogError($"Couldn't find BaseSkin SkinData! What's going on?");
+                    continue;
+                }
+                PlayerManager.Instance.SetSkin(subclass.Key, baseSkinData.SkinId);
+                HeroSelectionManager.Instance?.SetSkinIntoSubclassData(baseSkinData.SkinSubclass.SubClassName, baseSkinData.SkinId);
+                HeroSelectionManager.Instance?.charPopup?.DoSkins();
+            }
+            orig(self);
+
         }
 
         private void CharPopup_Start(On.CharPopup.orig_Start orig, CharPopup self)
@@ -61,6 +97,20 @@ namespace AtOSkinExtender
                 //self._SkinDataSource.Add(skinData.SkinId.ToLower(), UnityEngine.Object.Instantiate<SkinData>(skinData));
                 self._SkinDataSource.Add(skinData.SkinId.ToLower(), UnityEngine.Object.Instantiate<SkinData>(skinData));
             }
+        }
+
+        public SkinData GetBaseSkinForSubclass(string id)
+        {
+            id = id.ToLower();
+            foreach (KeyValuePair<string, SkinData> keyValuePair in Globals.Instance._SkinDataSource)
+            {
+                if (keyValuePair.Value.SkinSubclass.Id.ToLower() == id
+                    && keyValuePair.Value.BaseSkin)
+                {
+                    return keyValuePair.Value;
+                }
+            }
+            return null;
         }
     }
 }

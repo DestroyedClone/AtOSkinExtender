@@ -48,7 +48,9 @@ namespace AtOSkinExtender.Modules
             {
                 get
                 {
-                    return $"{CurrentPage} / {MaxPages}";
+                    if (MaxPages == 0)
+                        return string.Empty;
+                    return $"{CurrentPage + 1} / {MaxPages + 1}";
                 }
             }
 

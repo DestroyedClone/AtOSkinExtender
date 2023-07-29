@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace AtOSkinExtender
 {
@@ -10,14 +8,17 @@ namespace AtOSkinExtender
         {
             { "SkinExtender_Page", "Page" },
         };
+
         public static Dictionary<string, string> tokens_es = new Dictionary<string, string>()
         {
             { "SkinExtender_Page", "Página" },
         };
+
         public static Dictionary<string, string> tokens_ko = new Dictionary<string, string>()
         {
             { "SkinExtender_Page", "페이지" },
         };
+
         public static Dictionary<string, string> tokens_zhCN = new Dictionary<string, string>()
         {
             { "SkinExtender_Page", "页" },
@@ -40,12 +41,15 @@ namespace AtOSkinExtender
                 case "en":
                     chosenTokens = tokens_en;
                     break;
+
                 case "es:":
                     chosenTokens = tokens_es;
                     break;
+
                 case "ko":
                     chosenTokens = tokens_ko;
                     break;
+
                 case "zh-CN":
                     chosenTokens = tokens_zhCN;
                     break;

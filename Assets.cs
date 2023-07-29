@@ -1,8 +1,4 @@
-﻿using BepInEx;
-using ExitGames.Client.Photon;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using static AtOSkinExtender.Plugin;
 
@@ -10,8 +6,29 @@ namespace AtOSkinExtender
 {
     public static class Assets
     {
+        public static SkinData GetBaseSkinOrDefaultForSubclass(string id)
+        {
+            id = id.ToLower();
+            SkinData fallbackSkinData = null;
+            foreach (KeyValuePair<string, SkinData> keyValuePair in Globals.Instance._SkinDataSource)
+            {
+                if (keyValuePair.Value.SkinSubclass.Id.ToLower() == id)
+                {
+                    if (keyValuePair.Value.BaseSkin)
+                    {
+                        return keyValuePair.Value;
+                    }
+                    else if (fallbackSkinData == null)
+                    {
+                        fallbackSkinData = keyValuePair.Value;
+                    }
+                }
+            }
+            return fallbackSkinData;
+        }
 
         #region ContentManagement
+
         public static Dictionary<string, List<SkinData>> skinDataPacks = new Dictionary<string, List<SkinData>>();
 
         public static List<SkinData> GetOrCreateSkinDataListForGUID(string guid)
@@ -32,7 +49,6 @@ namespace AtOSkinExtender
             }
         }
 
-
         public static void AddSkinDataToPack(SkinData skinData, string guid)
         {
             var skinDataList = GetOrCreateSkinDataListForGUID(guid);
@@ -40,14 +56,19 @@ namespace AtOSkinExtender
             {
                 _logger.LogWarning($"{nameof(AddSkinDataToPack)}:: Aborting adding \"{skinData.skinId}\" to identifier {guid} since pack already contains it.");
                 return;
-            } else
+            }
+            else
             {
                 skinDataList.Add(skinData);
             }
         }
 
-        
-        #endregion
+        public static string GetIdentiferForSkin(SkinData skinData)
+        {
+            return skinIdIdentifierReference[skinData.SkinId.ToLower()];
+        }
+
+        #endregion ContentManagement
 
         // CharPopup.DoSkins
         // setup the skinorder to properly autoshow

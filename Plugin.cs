@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AtOSkinExtender.Modules;
 using BepInEx;
-using UnityEngine;
-using UnityEngine.Events;
-using AtOSkinExtender.Modules;
+using System.Collections.Generic;
 using System.Security;
 using System.Security.Permissions;
-using JetBrains.Annotations;
-using BepInEx.Configuration;
+using UnityEngine.Events;
 
 [module: UnverifiableCode]
 #pragma warning disable CS0618 // Type or member is obsolete
 [assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]
 #pragma warning restore CS0618 // Type or member is obsolete
-
 
 namespace AtOSkinExtender
 {
@@ -27,10 +22,6 @@ namespace AtOSkinExtender
         public static BepInEx.Logging.ManualLogSource _logger;
 
         public static bool cfgShowSkinSource;
-
-        //something like this...
-        //public static Dictionary<string, Dictionary<string, SkinData>> customSkinContent = new Dictionary<string, Dictionary<string, SkinData>>();
-        public static Dictionary<string, GameObject> cachedSkinGameObjects = new Dictionary<string, GameObject>();
 
         /// <summary>
         /// A dictionary containing the "skinId" as the Key, and "mod GUID/Identifier" as the Value.
@@ -60,7 +51,7 @@ namespace AtOSkinExtender
         {
             //probably make this an IL hook?
             orig(self, _skinData);
-            var identifier = GetIdentiferForSkin(_skinData);
+            var identifier = Assets.GetIdentiferForSkin(_skinData);
             self.skinName.text += $"\n(<size=-.5>{identifier}</size>)";
         }
 
@@ -85,7 +76,7 @@ namespace AtOSkinExtender
                     continue;
                 }
                 _logger.LogWarning($"Subclass {subclass.Key} has a null SkinData selected. Resetting skin.");
-                var baseSkinData = GetBaseSkinOrDefaultForSubclass(subclass.Key);
+                var baseSkinData = Assets.GetBaseSkinOrDefaultForSubclass(subclass.Key);
                 if (baseSkinData == null)
                 {
                     _logger.LogError($"Couldn't reset skin because no matching SkinData was found!");
@@ -96,7 +87,6 @@ namespace AtOSkinExtender
                 HeroSelectionManager.Instance?.charPopup?.DoSkins();
             }
             orig(self);
-
         }
 
         private void StartSkinSelectorComponent(On.CharPopup.orig_Start orig, CharPopup self)
@@ -105,6 +95,7 @@ namespace AtOSkinExtender
             var comp = self.gameObject.AddComponent<SkinSelector.SkinSelectorComponent>();
             comp.charPopup = self;
         }
+
         private void AddSkinsToGame(On.Globals.orig_CreateGameContent orig, Globals self)
         {
             orig(self);
@@ -131,31 +122,6 @@ namespace AtOSkinExtender
                     self._SkinDataSource.Add(skinData.SkinId.ToLower(), UnityEngine.Object.Instantiate<SkinData>(skinData));
                 }
             }
-        }
-
-        public SkinData GetBaseSkinOrDefaultForSubclass(string id)
-        {
-            id = id.ToLower();
-            SkinData fallbackSkinData = null;
-            foreach (KeyValuePair<string, SkinData> keyValuePair in Globals.Instance._SkinDataSource)
-            {
-                if (keyValuePair.Value.SkinSubclass.Id.ToLower() == id)
-                {
-                    if (keyValuePair.Value.BaseSkin)
-                    {
-                        return keyValuePair.Value;
-                    } else if (fallbackSkinData == null)
-                    {
-                        fallbackSkinData = keyValuePair.Value;
-                    }
-                }
-            }
-            return fallbackSkinData;
-        }
-
-        public string GetIdentiferForSkin(SkinData skinData)
-        {
-            return skinIdIdentifierReference[skinData.SkinId.ToLower()];
         }
     }
 }

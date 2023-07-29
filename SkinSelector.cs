@@ -1,7 +1,5 @@
-﻿using JetBrains.Annotations;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -18,7 +16,7 @@ namespace AtOSkinExtender.Modules
             public Dictionary<string, int> subClassSkinPages = new Dictionary<string, int>();
             public Dictionary<string, int> subClassSkinMaxPages = new Dictionary<string, int>();
 
-            bool subscribed = false;
+            private bool subscribed = false;
 
             public int CurrentPage
             {
@@ -100,14 +98,13 @@ namespace AtOSkinExtender.Modules
                 for (int i = 0; i < list.Count; i++)
                 {
                     BotonSkin item = list[i];
-                    item.name = "SkinBoton"+i;
+                    item.name = "SkinBoton" + i;
                 }
 
                 charPopup.botonSkinBase = list.ToArray();
 
-
                 //populating dictionary
-                //need cache correction immediately 
+                //need cache correction immediately
                 foreach (var keyValuePair in Globals.Instance._SubClassSource)
                 {
                     subClassSkinPages.Add(keyValuePair.Value.Id, 0);
@@ -123,13 +120,13 @@ namespace AtOSkinExtender.Modules
                 textObject.transform.localPosition = new Vector2(5, -4);
                 PageDisplayObject = textObject.GetComponent<TextMeshPro>();
 
-
                 if (!subscribed)
                 {
                     subscribed = true;
                     On.CharPopup.DoSkins += CharPopup_DoSkins;
                 }
             }
+
             public void OnDestroy()
             {
                 if (subscribed)
@@ -139,6 +136,7 @@ namespace AtOSkinExtender.Modules
                 }
                 Instance = null;
             }
+
             private static void CharPopup_DoSkins(On.CharPopup.orig_DoSkins orig, CharPopup self)
             {
                 //Overriding because of an access error
@@ -161,7 +159,7 @@ namespace AtOSkinExtender.Modules
                 }
                 //Plugin._logger.LogMessage($"Page {Instance.CurrentPage}/{Instance.MaxPages}: Skins {Instance.PreviousSkinIndex} through {Instance.PreviousSkinIndex +compensatedSkinsPerPage} out of {skinsBySubclass.Count} ({compensatedSkinsPerPage} skins shown)");
 
-                for (int j = Instance.PreviousSkinIndex; j < Instance.PreviousSkinIndex +compensatedSkinsPerPage; j++)
+                for (int j = Instance.PreviousSkinIndex; j < Instance.PreviousSkinIndex + compensatedSkinsPerPage; j++)
                 {
                     stringBuilder.Clear();
                     if (skinsBySubclass[j].BaseSkin)
@@ -226,7 +224,8 @@ namespace AtOSkinExtender.Modules
                     {
                         CurrentPage = 0;
                     }
-                } else
+                }
+                else
                 {
                     if (newOffset < 0)
                     {
@@ -236,6 +235,7 @@ namespace AtOSkinExtender.Modules
                 UpdatePageDisplay();
                 charPopup.DoSkins();
             }
+
             public void UpdatePageDisplay()
             {
                 if (PageDisplayObject)

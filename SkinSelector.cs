@@ -50,7 +50,8 @@ namespace AtOSkinExtender.Modules
                 {
                     if (MaxPages == 0)
                         return string.Empty;
-                    return $"{CurrentPage + 1} / {MaxPages + 1}";
+                    return Texts.Instance.GetText("SkinExtender_Page") +
+                        $"\n{CurrentPage + 1} / {MaxPages + 1}";
                 }
             }
 

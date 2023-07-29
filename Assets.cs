@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BepInEx;
+using ExitGames.Client.Photon;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -8,6 +10,44 @@ namespace AtOSkinExtender
 {
     public static class Assets
     {
+
+        #region ContentManagement
+        public static Dictionary<string, List<SkinData>> skinDataPacks = new Dictionary<string, List<SkinData>>();
+
+        public static List<SkinData> GetOrCreateSkinDataListForGUID(string guid)
+        {
+            if (!skinDataPacks.TryGetValue(guid, out List<SkinData> skinDataList))
+            {
+                skinDataList = new List<SkinData>();
+                skinDataPacks.Add(guid, skinDataList);
+            }
+            return skinDataList;
+        }
+
+        public static void AddSkinDataToPack(IEnumerable<SkinData> skinDataCollection, string guid)
+        {
+            foreach (var skinData in skinDataCollection)
+            {
+                AddSkinDataToPack(skinData, guid);
+            }
+        }
+
+
+        public static void AddSkinDataToPack(SkinData skinData, string guid)
+        {
+            var skinDataList = GetOrCreateSkinDataListForGUID(guid);
+            if (skinDataList.Contains(skinData))
+            {
+                _logger.LogWarning($"{nameof(AddSkinDataToPack)}:: Aborting adding \"{skinData.skinId}\" to identifier {guid} since pack already contains it.");
+                return;
+            } else
+            {
+                skinDataList.Add(skinData);
+            }
+        }
+
+        
+        #endregion
 
         // CharPopup.DoSkins
         // setup the skinorder to properly autoshow
@@ -83,23 +123,7 @@ namespace AtOSkinExtender
             //steamStat no idea
             skinData.SteamStat = "";
 
-            if (AddSkinDataToDictionary(skinData))
-            {
-                return skinData;
-            }
-            return null;
-        }
-
-        public static bool AddSkinDataToDictionary(SkinData skinData)
-        {
-            if (customSkinDataDict.ContainsKey(skinData.skinId))
-            {
-                Plugin._logger.LogWarning($"{nameof(AddSkinDataToDictionary)}:: Aborting adding \"{skinData.skinId}\" since key already exists!");
-                return false;
-            }
-            Plugin._logger.LogMessage($"{nameof(AddSkinDataToDictionary)}:: Adding \"{skinData.skinId}\" to dict!");
-            customSkinDataDict.Add(skinData.skinId, skinData);
-            return true;
+            return skinData;
         }
     }
 }

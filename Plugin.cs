@@ -38,23 +38,23 @@ namespace AtOSkinExtender
         {
             _logger = Logger;
 
-            On.Globals.CreateGameContent += Globals_CreateGameContent;
-            On.CharPopup.Start += CharPopup_Start;
-            On.HeroSelectionManager.Start += HeroSelectionManager_Start;
+            On.Globals.CreateGameContent += AddSkinsToGame;
+            On.CharPopup.Start += StartSkinSelectorComponent;
+            On.HeroSelectionManager.Start += ResetSkinsIfInvalid;
         }
 
-        private void HeroSelectionManager_Start(On.HeroSelectionManager.orig_Start orig, HeroSelectionManager self)
+        private void ResetSkinsIfInvalid(On.HeroSelectionManager.orig_Start orig, HeroSelectionManager self)
         {
             foreach (var subclass in Globals.Instance._SubClassSource)
             {
                 if (subclass.Value == null)
                 {
-                    _logger.LogError($"Couldn't find subclass! What's going on?");
+                    //_logger.LogError($"Couldn't find subclass! What's going on?");
                     continue;
                 }
                 if (subclass.Key.StartsWith("young"))
                 {
-                    _logger.LogMessage($"Subclass {subclass.Key} is a youngtype, skipping.");
+                    //_logger.LogMessage($"Subclass {subclass.Key} is a youngtype, skipping.");
                     continue;
                 }
                 var activeSkin = PlayerManager.Instance.GetActiveSkin(subclass.Key);
@@ -63,11 +63,11 @@ namespace AtOSkinExtender
                 {
                     continue;
                 }
-                _logger.LogWarning($"Subclass {subclass.Key} has a null SkinData selected. Resetting to base skin to prevent nullref.");
-                var baseSkinData = GetBaseSkinForSubclass(subclass.Key);
+                _logger.LogWarning($"Subclass {subclass.Key} has a null SkinData selected. Resetting skin.");
+                var baseSkinData = GetBaseSkinOrDefaultForSubclass(subclass.Key);
                 if (baseSkinData == null)
                 {
-                    _logger.LogError($"Couldn't find BaseSkin SkinData! What's going on?");
+                    _logger.LogError($"Couldn't reset skin because no matching SkinData was found!");
                     continue;
                 }
                 PlayerManager.Instance.SetSkin(subclass.Key, baseSkinData.SkinId);
@@ -78,14 +78,14 @@ namespace AtOSkinExtender
 
         }
 
-        private void CharPopup_Start(On.CharPopup.orig_Start orig, CharPopup self)
+        private void StartSkinSelectorComponent(On.CharPopup.orig_Start orig, CharPopup self)
         {
             orig(self);
             var comp = self.gameObject.AddComponent<SkinSelector.SkinSelectorComponent>();
             comp.charPopup = self;
         }
 
-        private void Globals_CreateGameContent(On.Globals.orig_CreateGameContent orig, Globals self)
+        private void AddSkinsToGame(On.Globals.orig_CreateGameContent orig, Globals self)
         {
             orig(self);
 
@@ -99,18 +99,24 @@ namespace AtOSkinExtender
             }
         }
 
-        public SkinData GetBaseSkinForSubclass(string id)
+        public SkinData GetBaseSkinOrDefaultForSubclass(string id)
         {
             id = id.ToLower();
+            SkinData fallbackSkinData = null;
             foreach (KeyValuePair<string, SkinData> keyValuePair in Globals.Instance._SkinDataSource)
             {
-                if (keyValuePair.Value.SkinSubclass.Id.ToLower() == id
-                    && keyValuePair.Value.BaseSkin)
+                if (keyValuePair.Value.SkinSubclass.Id.ToLower() == id)
                 {
-                    return keyValuePair.Value;
+                    if (keyValuePair.Value.BaseSkin)
+                    {
+                        return keyValuePair.Value;
+                    } else if (fallbackSkinData == null)
+                    {
+                        fallbackSkinData = keyValuePair.Value;
+                    }
                 }
             }
-            return null;
+            return fallbackSkinData;
         }
     }
 }

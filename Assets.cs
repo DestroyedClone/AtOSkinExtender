@@ -26,7 +26,28 @@ namespace AtOSkinExtender
         /// <param name="autoAdd">Set to true to add the skinData to the skin dict.</param>
         /// <returns></returns>
         public static SkinData CreateSkinData(string subclassId, string skinName, int perkLevel,
-            Sprite portrait, Sprite portraitLarge, Sprite silueta, Sprite siluetaLarge, GameObject skinGO, string Sku = "", bool autoAdd = true)
+            Sprite portrait, Sprite portraitLarge, Sprite silueta, Sprite siluetaLarge, GameObject skinGO, string Sku = "")//, bool autoAdd = true)
+        {
+            return CreateSkinData(subclassId, skinName, subclassId + "Skin" + skinName, perkLevel, portrait, portraitLarge, silueta, siluetaLarge, skinGO, Sku);
+        }
+
+        /// <summary>
+        /// Creates and returns a SkinData instance.
+        /// </summary>
+        /// <param name="subclassId">"ranger"<br><see href="https://docs.google.com/spreadsheets/d/1CokEi8RY33KTwKccprNvr4nnRk2y-HQGUZC_YB9exzo/edit#gid=17158299">Reference: SubclassData (Google Sheets)</see></br></param>
+        /// <param name="skinName">"Voodoo Witch"<br><see href="https://docs.google.com/spreadsheets/d/1CokEi8RY33KTwKccprNvr4nnRk2y-HQGUZC_YB9exzo/edit#gid=1568095750">Reference: SkinData (Google Sheets)</see></br></param>
+        /// <param name="skinId">andrinSkinRegular<br><see href="https://docs.google.com/spreadsheets/d/1CokEi8RY33KTwKccprNvr4nnRk2y-HQGUZC_YB9exzo/edit#gid=1568095750">Reference: SkinData (Google Sheets)</see></br></param>
+        /// <param name="perkLevel">Set to 0 for no perk level requirement.<br><see href="https://docs.google.com/spreadsheets/d/1CokEi8RY33KTwKccprNvr4nnRk2y-HQGUZC_YB9exzo/edit#gid=1568095750">Reference: SkinData (Google Sheets)</see></br></param>
+        /// <param name="portrait"></param>
+        /// <param name="portraitLarge"></param>
+        /// <param name="silueta">silhouette</param>
+        /// <param name="siluetaLarge">silhouette large</param>
+        /// <param name="skinGO">The display gameObject for the skin in combat.<br><see href="https://docs.google.com/spreadsheets/d/1CokEi8RY33KTwKccprNvr4nnRk2y-HQGUZC_YB9exzo/edit#gid=1568095750">Reference: SkinData (Google Sheets)</see></br></param>
+        /// <param name="Sku">Required DLC<br>Wolfwars(2325780) | Halloween(2168960)</br><br><see href="https://docs.google.com/spreadsheets/d/1CokEi8RY33KTwKccprNvr4nnRk2y-HQGUZC_YB9exzo/edit#gid=1568095750">Reference: SkinData (Google Sheets)</see></br></param>
+        /// <param name="autoAdd">Set to true to add the skinData to the skin dict.</param>
+        /// <returns></returns>
+        public static SkinData CreateSkinData(string subclassId, string skinName, string skinId, int perkLevel,
+            Sprite portrait, Sprite portraitLarge, Sprite silueta, Sprite siluetaLarge, GameObject skinGO, string Sku = "")//, bool autoAdd = true)
         {
             if (!Globals.Instance._SubClassSource.TryGetValue(subclassId, out SubClassData subClassData))
             {
@@ -43,7 +64,7 @@ namespace AtOSkinExtender
             //PerkLevel = required character level. 0 is acceptable
             skinData.PerkLevel = perkLevel;
             //skinId assassin assassinmedium
-            skinData.SkinId = skinData.name.ToLower();
+            skinData.SkinId = skinId;
             //SkinName Assassin Rogue
             skinData.SkinName = skinName;
             //skinOrder = obvious

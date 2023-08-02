@@ -6,19 +6,29 @@ using UnityEngine;
 
 namespace AtOSkinExtender.Modules
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public static class SkinSelector
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     {
         //ref: roughly based on TomeManager
+        /// <summary>
+        /// Component used to control CharPopup's skin menu
+        /// </summary>
         public class SkinSelectorComponent : MonoBehaviour
-        {
+        {/// <summary>
+         /// The instance of the SkinSelectorComponent
+         /// </summary>
             public static SkinSelectorComponent Instance;
+            /// <summary>
+            /// The current CharPopup instance, assigned when the component is added.
+            /// </summary>
             public CharPopup charPopup;
-            public Dictionary<string, int> subClassSkinPages = new Dictionary<string, int>();
-            public Dictionary<string, int> subClassSkinMaxPages = new Dictionary<string, int>();
+            private readonly Dictionary<string, int> subClassSkinPages = new Dictionary<string, int>();
+            private readonly Dictionary<string, int> subClassSkinMaxPages = new Dictionary<string, int>();
 
             private bool subscribed = false;
 
-            public int CurrentPage
+            private int CurrentPage
             {
                 get
                 {
@@ -30,7 +40,7 @@ namespace AtOSkinExtender.Modules
                 }
             }
 
-            public int MaxPages
+            private int MaxPages
             {
                 get
                 {
@@ -42,7 +52,7 @@ namespace AtOSkinExtender.Modules
                 }
             }
 
-            public string PageDisplay
+            private string PageDisplay
             {
                 get
                 {
@@ -53,9 +63,9 @@ namespace AtOSkinExtender.Modules
                 }
             }
 
-            public TextMeshPro PageDisplayObject;
+            private TextMeshPro PageDisplayObject;
 
-            public int MaxSkinsPerPage
+            private int MaxSkinsPerPage
             {
                 get
                 {
@@ -63,7 +73,7 @@ namespace AtOSkinExtender.Modules
                 }
             }
 
-            public int PreviousSkinIndex
+            private int PreviousSkinIndex
             {
                 get
                 {
@@ -71,11 +81,17 @@ namespace AtOSkinExtender.Modules
                 }
             }
 
+            /// <summary>
+            /// Unity action.
+            /// </summary>
             public void Awake()
             {
                 Instance = this;
             }
 
+            /// <summary>
+            /// Unity action.
+            /// </summary>
             public void Start()
             {
                 //Extend the amount of baseskins
@@ -127,6 +143,9 @@ namespace AtOSkinExtender.Modules
                 }
             }
 
+            /// <summary>
+            /// Unity action.
+            /// </summary>
             public void OnDestroy()
             {
                 if (subscribed)
@@ -137,7 +156,10 @@ namespace AtOSkinExtender.Modules
                 Instance = null;
             }
 
-            private static void CharPopup_DoSkins(On.CharPopup.orig_DoSkins orig, CharPopup self)
+            /// <summary>
+            /// Override to patch out of range exceptiona and to add scrolling support.
+            /// </summary>
+            public static void CharPopup_DoSkins(On.CharPopup.orig_DoSkins orig, CharPopup self)
             {
                 //Overriding because of an access error
                 //TODO: Replace with an IL-level hook, so we don't have to do this action shit.
@@ -186,6 +208,10 @@ namespace AtOSkinExtender.Modules
                 Plugin.Post_onCharPopupDoSkins?.Invoke();
             }
 
+
+            /// <summary>
+            /// Unity action.
+            /// </summary>
             public void Update()
             {
                 if (!charPopup.opened)
@@ -210,7 +236,7 @@ namespace AtOSkinExtender.Modules
                 }
             }
 
-            public void UpdatePage(int increment)
+            private void UpdatePage(int increment)
             {
                 //List<SkinData> skinsBySubclass = Globals.Instance.GetSkinsBySubclass(charPopup.SCD.Id);
                 //int skinCount = skinsBySubclass.Count;
@@ -218,7 +244,7 @@ namespace AtOSkinExtender.Modules
 
                 //Main._logger.LogMessage($"Changing Page from {CurrentPage} to {CurrentPage+increment} (Max: {MaxPages})");
                 CurrentPage += increment;
-                if (increment == +1)
+                if (increment > 0)
                 {
                     if (CurrentPage > MaxPages)
                     {
@@ -236,7 +262,7 @@ namespace AtOSkinExtender.Modules
                 charPopup.DoSkins();
             }
 
-            public void UpdatePageDisplay()
+            private void UpdatePageDisplay()
             {
                 if (PageDisplayObject)
                 {

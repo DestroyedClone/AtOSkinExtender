@@ -13,26 +13,39 @@ using UnityEngine.Events;
 namespace AtOSkinExtender
 {
     [BepInPlugin(modGuid, modName, modVer)]
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public class Plugin : BaseUnityPlugin
     {
+
         public const string modGuid = "com.DestroyedClone.AtOSkinExtender";
         public const string modName = "AtOSkinExtender";
-        public const string modVer = "0.1.0";
+        public const string modVer = "0.1.1";
 
-        public static BepInEx.Logging.ManualLogSource _logger;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+        internal static BepInEx.Logging.ManualLogSource _logger;
 
-        public static bool cfgShowSkinSource;
+        private static bool cfgShowSkinSource;
 
         /// <summary>
         /// A dictionary containing the "skinId" as the Key, and "mod GUID/Identifier" as the Value.
         /// </summary>
         public static Dictionary<string, string> skinIdIdentifierReference = new Dictionary<string, string>();
-
+        /// <summary>
+        /// Action to subscribe to when creating skins to ensure maximum compatibility.
+        /// </summary>
         public static UnityAction onCreateSkins;
+        /// <summary>
+        /// Action to replace calls made before event of On.CharPopup.DoSkins's orig call.
+        /// </summary>
         public static UnityAction Pre_onCharPopupDoSkins;
+        /// <summary>
+        /// Action to replace calls made after event of On.CharPopup.DoSkins's orig call.
+        /// </summary>
         public static UnityAction Post_onCharPopupDoSkins;
 
-        public void Awake()
+#pragma warning disable IDE0051 // Remove unused private members
+        private void Awake()
+#pragma warning restore IDE0051 // Remove unused private members
         {
             _logger = Logger;
 

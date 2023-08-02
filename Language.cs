@@ -36,13 +36,14 @@ namespace AtOSkinExtender
             orig(self, type);
 
             Dictionary<string, string> chosenTokens = null;
+            //Plugin._logger.LogMessage(self.lang);
             switch (self.lang)
             {
                 case "en":
                     chosenTokens = tokens_en;
                     break;
 
-                case "es:":
+                case "es":
                     chosenTokens = tokens_es;
                     break;
 
@@ -54,10 +55,11 @@ namespace AtOSkinExtender
                     chosenTokens = tokens_zhCN;
                     break;
             }
-            foreach (var tokenPair in chosenTokens)
-            {
-                self.TextStrings[self.lang][tokenPair.Key] = tokenPair.Value;
-            }
+            if (chosenTokens != null)
+                foreach (var tokenPair in chosenTokens)
+                {
+                    self.TextStrings[self.lang][tokenPair.Key] = tokenPair.Value;
+                }
         }
     }
 }

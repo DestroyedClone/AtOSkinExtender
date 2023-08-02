@@ -4,8 +4,24 @@ using static AtOSkinExtender.Plugin;
 
 namespace AtOSkinExtender
 {
+    /// <summary>
+    /// Helpers for making and cataloguing new skins.
+    /// </summary>
     public static class Assets
     {
+        /// <summary>
+        /// The sku for the DLC Wolf Wars
+        /// </summary>
+        public const string sku_WolfWars = "2325780";
+        /// <summary>
+        /// The sku for the DLC Halloween
+        /// </summary>
+        public const string sku_Halloween = "2168960";
+        /// <summary>
+        /// Returns the first skin found with .BaseSkin set to true. If there's no BaseSkins, then it will return the first skin found. Otherwise, returns null.
+        /// </summary>
+        /// <param name="id">SubclassData id</param>
+        /// <returns></returns>
         public static SkinData GetBaseSkinOrDefaultForSubclass(string id)
         {
             id = id.ToLower();
@@ -28,33 +44,50 @@ namespace AtOSkinExtender
         }
 
         #region ContentManagement
-
+        /// <summary>
+        /// List of skin data packs. 
+        /// </summary>
         public static Dictionary<string, List<SkinData>> skinDataPacks = new Dictionary<string, List<SkinData>>();
 
-        public static List<SkinData> GetOrCreateSkinDataListForGUID(string guid)
+        /// <summary>
+        /// Creates an associated SkinData list for the assigned identifier, or gets the existed associated SkinData list.
+        /// </summary>
+        /// <param name="identifier">The identifier for the SkinData list</param>
+        /// <returns></returns>
+        public static List<SkinData> GetOrCreateSkinDataListForIdentifier(string identifier)
         {
-            if (!skinDataPacks.TryGetValue(guid, out List<SkinData> skinDataList))
+            if (!skinDataPacks.TryGetValue(identifier, out List<SkinData> skinDataList))
             {
                 skinDataList = new List<SkinData>();
-                skinDataPacks.Add(guid, skinDataList);
+                skinDataPacks.Add(identifier, skinDataList);
             }
             return skinDataList;
         }
 
-        public static void AddSkinDataToPack(IEnumerable<SkinData> skinDataCollection, string guid)
+        /// <summary>
+        /// Adds an IEnumerable of SkinData to the collection
+        /// </summary>
+        /// <param name="skinDataCollection">Collection of SkinData's to add to the pack</param>
+        /// <param name="identifier">SkinData List identifier</param>
+        public static void AddSkinDataToPack(IEnumerable<SkinData> skinDataCollection, string identifier)
         {
             foreach (var skinData in skinDataCollection)
             {
-                AddSkinDataToPack(skinData, guid);
+                AddSkinDataToPack(skinData, identifier);
             }
         }
 
-        public static void AddSkinDataToPack(SkinData skinData, string guid)
+        /// <summary>
+        /// Adds a SkinData to the collection
+        /// </summary>
+        /// <param name="skinData">SkinData to add to the pack</param>
+        /// <param name="identifier">SkinData List identifier</param>
+        public static void AddSkinDataToPack(SkinData skinData, string identifier)
         {
-            var skinDataList = GetOrCreateSkinDataListForGUID(guid);
+            var skinDataList = GetOrCreateSkinDataListForIdentifier(identifier);
             if (skinDataList.Contains(skinData))
             {
-                _logger.LogWarning($"{nameof(AddSkinDataToPack)}:: Aborting adding \"{skinData.skinId}\" to identifier {guid} since pack already contains it.");
+                _logger.LogWarning($"{nameof(AddSkinDataToPack)}:: Aborting adding \"{skinData.skinId}\" to identifier {identifier} since pack already contains it.");
                 return;
             }
             else
@@ -63,6 +96,11 @@ namespace AtOSkinExtender
             }
         }
 
+        /// <summary>
+        /// Returns the associated identifier for a SkinData
+        /// </summary>
+        /// <param name="skinData">SkinData that you want the identifier of.</param>
+        /// <returns></returns>
         public static string GetIdentiferForSkin(SkinData skinData)
         {
             return skinIdIdentifierReference[skinData.SkinId.ToLower()];
@@ -84,7 +122,6 @@ namespace AtOSkinExtender
         /// <param name="siluetaLarge">silhouette large</param>
         /// <param name="skinGO">The display gameObject for the skin in combat.<br><see href="https://docs.google.com/spreadsheets/d/1CokEi8RY33KTwKccprNvr4nnRk2y-HQGUZC_YB9exzo/edit#gid=1568095750">Reference: SkinData (Google Sheets)</see></br></param>
         /// <param name="Sku">Required DLC<br>Wolfwars(2325780) | Halloween(2168960)</br><br><see href="https://docs.google.com/spreadsheets/d/1CokEi8RY33KTwKccprNvr4nnRk2y-HQGUZC_YB9exzo/edit#gid=1568095750">Reference: SkinData (Google Sheets)</see></br></param>
-        /// <param name="autoAdd">Set to true to add the skinData to the skin dict.</param>
         /// <returns></returns>
         public static SkinData CreateSkinData(string subclassId, string skinName, int perkLevel,
             Sprite portrait, Sprite portraitLarge, Sprite silueta, Sprite siluetaLarge, GameObject skinGO, string Sku = "")//, bool autoAdd = true)
@@ -105,7 +142,6 @@ namespace AtOSkinExtender
         /// <param name="siluetaLarge">silhouette large</param>
         /// <param name="skinGO">The display gameObject for the skin in combat.<br><see href="https://docs.google.com/spreadsheets/d/1CokEi8RY33KTwKccprNvr4nnRk2y-HQGUZC_YB9exzo/edit#gid=1568095750">Reference: SkinData (Google Sheets)</see></br></param>
         /// <param name="Sku">Required DLC<br>Wolfwars(2325780) | Halloween(2168960)</br><br><see href="https://docs.google.com/spreadsheets/d/1CokEi8RY33KTwKccprNvr4nnRk2y-HQGUZC_YB9exzo/edit#gid=1568095750">Reference: SkinData (Google Sheets)</see></br></param>
-        /// <param name="autoAdd">Set to true to add the skinData to the skin dict.</param>
         /// <returns></returns>
         public static SkinData CreateSkinData(string subclassId, string skinName, string skinId, int perkLevel,
             Sprite portrait, Sprite portraitLarge, Sprite silueta, Sprite siluetaLarge, GameObject skinGO, string Sku = "")//, bool autoAdd = true)
